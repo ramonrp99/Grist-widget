@@ -1,9 +1,10 @@
 const { availableModels } = require('../config/models')
 
-// Obtener listado de modelos externos disponibles (OpenRouter)
-const getExternalModels = async () => {
+// Obtener listado de modelos disponibles en OpenRouter
+const getOpenRouterModels = async () => {
     try {
         const res = await fetch('https://openrouter.ai/api/v1/models', {
+            method: 'GET',
             headers: {
                 'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`
             }
@@ -12,12 +13,12 @@ const getExternalModels = async () => {
         
         // La API de OpenRouter siempre devuelve todos sus modelos disponibles
         // Únicamente se devuelven los que se encuentren listados en models.json
-        const availableModelsIds = new Set(availableModels.external.map(m => m.id))
+        const availableModelsIds = new Set(availableModels.external.map(m => m.model))
 
         return json.data
             .filter(m => availableModelsIds.has(m.id))
             .map(m => ({
-                id: m.id,
+                model: m.id,
                 name: availableModels.external.find(am => am.id === m.id)?.name || m.name,
                 description: availableModels.external.find(am => am.id === m.id)?.description || '',
                 type: 'external'
@@ -35,7 +36,49 @@ const getLocalModels = async () => {
 
 // Obtener listado de modelos disponibles
 const getAvailableModels = async () => {
-    return await getExternalModels()
+    return await getOpenRouterModels()
 }
 
-module.exports = { getAvailableModels }
+// Enviar prompt a modelo de OpenRouter
+const generateOpenRouterCompletion = async (data) => {
+    try {
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'model': data.model,
+                'messages': [
+                    {
+                        'role': 'user',
+                        'content': data.prompt
+                    }
+                ]
+            })
+        })
+        const json = await res.json()
+
+        if(json.error) {
+            return json.error
+        }
+
+        return json.choices[0].message.content
+    } catch (err) {
+        console.error(`Error en llamada a OpenRouter: ${err}`)
+        return [];
+    }
+}
+
+// Enviar prompt a modelo local
+const generateLocalCompletion = async (data) => {
+
+}
+
+// Enviar prompt al modelo seleccionado
+const generateCompletion = async (data) => {
+    return await generateOpenRouterCompletion(data)
+}
+
+module.exports = { getAvailableModels, generateCompletion }
