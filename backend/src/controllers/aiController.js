@@ -1,4 +1,5 @@
 const aiService = require('../services/aiService')
+const { buildChatMessages } = require('../utils/promptBuilder')
 
 const getModels = async(req, res) => {
     try {
@@ -17,8 +18,12 @@ const getModels = async(req, res) => {
 }
 
 const generateCompletion = async(req, res) => {
+    const { model, prompt, context, messages } = req.body
+
+    const messagesArray = buildChatMessages(prompt, context, messages)
+
     try {
-        const answer = await aiService.generateCompletion(req.body)
+        const answer = await aiService.generateCompletion(model, messagesArray)
 
         res.json({
             ok: true,

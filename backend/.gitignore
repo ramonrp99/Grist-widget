@@ -3,4 +3,6 @@ node_modules
 
 # configuration
 config/models.json
+config/systemPrompt.md
+
 .env

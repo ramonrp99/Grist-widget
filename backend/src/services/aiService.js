@@ -40,7 +40,7 @@ const getAvailableModels = async () => {
 }
 
 // Enviar prompt a modelo de OpenRouter
-const generateOpenRouterCompletion = async (data) => {
+const generateOpenRouterCompletion = async (model, messages) => {
     try {
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
@@ -49,13 +49,8 @@ const generateOpenRouterCompletion = async (data) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                'model': data.model,
-                'messages': [
-                    {
-                        'role': 'user',
-                        'content': data.prompt
-                    }
-                ]
+                'model': model,
+                'messages': messages
             })
         })
         const json = await res.json()
@@ -77,8 +72,8 @@ const generateLocalCompletion = async (data) => {
 }
 
 // Enviar prompt al modelo seleccionado
-const generateCompletion = async (data) => {
-    return await generateOpenRouterCompletion(data)
+const generateCompletion = async (model, messages) => {
+    return await generateOpenRouterCompletion(model, messages)
 }
 
 module.exports = { getAvailableModels, generateCompletion }

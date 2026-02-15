@@ -2,14 +2,14 @@ const z = require('zod')
 
 const messageSchema = z.object({
     role: z.enum(['system', 'user', 'assistant']),
-    message: z.string().nonempty()
+    content: z.string().nonempty()
 })
 
 const promptSchema = z.object({
     model: z.string().nonempty(),
     prompt: z.string().nonempty(),
-    context: z.array(z.string()).nonempty().optional(),
-    messages: z.array(messageSchema).nonempty().optional()
+    context: z.string().nonempty(),
+    messages: z.array(messageSchema)
 })
 
 const validatePrompt = (input) => {
