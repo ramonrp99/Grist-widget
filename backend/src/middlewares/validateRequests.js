@@ -1,7 +1,7 @@
 const { validatePrompt } = require('../schemas/prompt')
 const z = require('zod')
 
-const validateChat = (req, res, next) => {
+const validateChatRequest = (req, res, next) => {
     const result = validatePrompt(req.body)
 
     if(!result.success) {
@@ -15,4 +15,4 @@ const validateChat = (req, res, next) => {
     next()
 }
 
-module.exports = { validateChat }
+module.exports = { validateChatRequest }
