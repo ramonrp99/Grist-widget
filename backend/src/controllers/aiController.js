@@ -20,10 +20,17 @@ const getModels = async(req, res) => {
 const generateCompletion = async(req, res) => {
     const { model, prompt, context, messages } = req.body
 
-    const messagesArray = buildChatMessages(prompt, context, messages)
+    const totalMessages = buildChatMessages(prompt, context, messages)
+
+    if (!totalMessages.ok) {
+        return res.status(400).json({
+            ok: false,
+            error: totalMessages.error
+        })
+    }
 
     try {
-        const answer = await aiService.generateCompletion(model, messagesArray)
+        const answer = await aiService.generateCompletion(model, totalMessages.data)
 
         res.json({
             ok: true,
