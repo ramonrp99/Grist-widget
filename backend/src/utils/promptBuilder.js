@@ -9,7 +9,7 @@ const getTruncatedHistory = (history, availableTokens) => {
     let currentTokens = 0
 
     // Incluye mensajes del historial hasta alcanzar el límite (de más reciente a más antiguo)
-    for (let i = history.length - 1; i > 0; i--) {
+    for (let i = history.length - 1; i >= 0; i--) {
         const messageTokens = countTokens(history[i].content)
 
         if (currentTokens + messageTokens <= availableTokens) {
