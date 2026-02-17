@@ -12,7 +12,7 @@ const getTruncatedHistory = (history, availableTokens) => {
     for (let i = history.length - 1; i > 0; i--) {
         const messageTokens = countTokens(history[i].content)
 
-        if (currentTokens + messageTokens < availableTokens) {
+        if (currentTokens + messageTokens <= availableTokens) {
             truncatedHistory.unshift(history[i])
             currentTokens += messageTokens
         } else {
@@ -46,7 +46,7 @@ const getTruncatedContext = (context, availableTokens) => {
     for (let i = 3; i < rowsTokens.length - 1; i++) {
         const row = rowsTokens[i]
 
-        if (currentTokens + row.tokens < availableTokens) {
+        if (currentTokens + row.tokens <= availableTokens) {
             currentContext += `\n${row[i].content}`
             currentTokens += row[i].tokens
         } else {
@@ -76,7 +76,7 @@ const buildChatMessages = (userPrompt, context, history) => {
     const totalTokens = baseTokens + fullContextTokens + fullHistoryTokens
 
     // Todas las partes caben dentro del límite
-    if (totalTokens < maxTokens) {
+    if (totalTokens <= maxTokens) {
         return {
             ok: true,
             data: [
@@ -104,7 +104,7 @@ const buildChatMessages = (userPrompt, context, history) => {
 
     // Si el contexto completo cabe dentro del límite, se incluye el contexto completo y se trunca el historial
     // Si no cabe, se descarta el historial completo y se trunca el contexto
-    if (fullContextTokens < tokensAvailable) {
+    if (fullContextTokens <= tokensAvailable) {
         const tokensAvailableHistory = tokensAvailable - fullContextTokens
 
         finalContext = context
