@@ -7,7 +7,11 @@ const corsOptions = {
         } else {
             callback(new Error('Acceso no permitido por CORS'))
         }
-    }
+    },
+    allowedHeaders: [
+        'Content-Type',
+        'CF-TURNSTILE-TOKEN'
+    ]
 }
 
 module.exports = { corsOptions }

@@ -1,4 +1,10 @@
-require('dotenv').config()
+const path = require('node:path')
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+require('dotenv').config({
+    path: path.resolve(process.cwd(), envFile)
+})
+
+console.log(`Cargando configuración desde: ${envFile}`)
 
 const express = require('express')
 const cors = require('cors')
