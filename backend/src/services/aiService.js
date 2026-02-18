@@ -1,5 +1,3 @@
-const { availableModels } = require('../config/models')
-
 // Obtener listado de modelos disponibles en OpenRouter
 const getOpenRouterModels = async () => {
     try {
@@ -10,22 +8,25 @@ const getOpenRouterModels = async () => {
             }
         })
         const json = await res.json()
-        
-        // La API de OpenRouter siempre devuelve todos sus modelos disponibles
-        // Únicamente se devuelven los que se encuentren listados en models.json
-        const availableModelsIds = new Set(availableModels.external.map(m => m.model))
 
-        return json.data
-            .filter(m => availableModelsIds.has(m.id))
-            .map(m => ({
-                model: m.id,
-                name: availableModels.external.find(am => am.id === m.id)?.name || m.name,
-                description: availableModels.external.find(am => am.id === m.id)?.description || '',
-                type: 'external'
-            }))
+        if(json.error) {
+            return {
+                ok: false,
+                error: json.error
+            }
+        }
+
+        return {
+            ok: true,
+            data: json.data
+        }
     } catch (err) {
-        console.error(`Error en llamada a OpenRouter: ${err}`)
-        return []
+        console.error(`Error en llamada a /models en OpenRouter: ${err}`)
+
+        return {
+            ok: false,
+            error: err
+        }
     }
 }
 

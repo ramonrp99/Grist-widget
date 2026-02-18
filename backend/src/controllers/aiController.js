@@ -2,9 +2,26 @@ const aiService = require('../services/aiService')
 const { buildChatMessages } = require('../utils/promptBuilder')
 const { extractTable } = require('../utils/markdown')
 
+const { availableModels } = require('../config/models')
+
 const getModels = async(req, res) => {
     try {
-        const models = await aiService.getAvailableModels()
+        const response = await aiService.getAvailableModels()
+
+        if (!response.ok) {
+            return res.json(response)
+        }
+
+        // La API de OpenRouter siempre devuelve todos sus modelos disponibles
+        // Únicamente se devuelven los que se encuentren listados en models.json
+        const availableModelsIds = new Set(availableModels.external.map(m => m.model))
+        const models = response.data.filter(m => availableModelsIds.has(m.id))
+                                    .map(m => ({
+                                        model: m.id,
+                                        name: availableModels.external.find(am => am.model === m.id)?.name || m.name,
+                                        description: availableModels.external.find(am => am.model === m.id)?.description || '',
+                                        type: 'external'
+                                    }))
 
         res.json({
             ok: true,
