@@ -25,7 +25,7 @@ const getOpenRouterModels = async () => {
             }))
     } catch (err) {
         console.error(`Error en llamada a OpenRouter: ${err}`)
-        return [];
+        return []
     }
 }
 
@@ -56,13 +56,22 @@ const generateOpenRouterCompletion = async (model, messages) => {
         const json = await res.json()
 
         if(json.error) {
-            return json.error
+            return {
+                ok: false,
+                error: json.error
+            }
         }
 
-        return json.choices[0].message.content
+        return {
+            ok: true,
+            data: json.choices[0].message.content
+        }
     } catch (err) {
         console.error(`Error en llamada a OpenRouter: ${err}`)
-        return [];
+        return {
+            ok: false,
+            error: err
+        }
     }
 }
 
