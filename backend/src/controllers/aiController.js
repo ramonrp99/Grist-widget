@@ -1,5 +1,6 @@
 const aiService = require('../services/aiService')
 const { buildChatMessages } = require('../utils/promptBuilder')
+const { extractTable } = require('../utils/markdown')
 
 const getModels = async(req, res) => {
     try {
@@ -30,11 +31,18 @@ const generateCompletion = async(req, res) => {
     }
 
     try {
-        const answer = await aiService.generateCompletion(model, totalMessages.data)
+        const response = await aiService.generateCompletion(model, totalMessages.data)
+
+        if (!response.ok) {
+            return res.json(response)
+        }
+
+        const estructuredResponse = extractTable(response.data)
 
         res.json({
             ok: true,
-            data: answer
+            response: estructuredResponse.text,
+            data: estructuredResponse.table
         })
     } catch (err) {
         res.status(400).json({
