@@ -1,16 +1,9 @@
-const fs = require('node:fs')
-const path = require('node:path')
+const { readFile } = require('../utils/files')
 
-const modelsPath = path.join(__dirname, '../../config/models.json')
+const response = readFile('../../config/models.json')
 
-let availableModels = { external: [] }
-
-try {
-    const data = fs.readFileSync(modelsPath, 'utf-8')
-
-    availableModels = JSON.parse(data)
-} catch (err) {
-    console.error(`Error leyendo el fichero models.json: ${err}`)
-}
+const availableModels = (response.ok && response.data)
+    ? JSON.parse(response.data)
+    : { external: [] }
 
 module.exports = { availableModels }
