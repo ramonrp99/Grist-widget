@@ -27,6 +27,26 @@ const config = {
     openRouterApiKey: process.env.OPENROUTER_API_KEY || '',
     cfTurnstileSecretKey: process.env.CF_TURNSTILE_SECRET_KEY || '',
 
+    // Validaciones Requests (Schemas)
+    schemas: {
+        promptSchema: {
+            model: {
+                maxLength: Number.parseInt(process.env.MAX_MODEL_LENGTH) || 50
+            },
+            prompt: {
+                maxLength: Number.parseInt(process.env.MAX_PROMPT_LENGTH) || 500
+            },
+            context: {
+                maxLength: Number.parseInt(process.env.MAX_CONTEXT_LENGTH) || 3000
+            }
+        },
+        messagesSchema: {
+            content: {
+                maxLength: Number.parseInt(process.env.MAX_MESSAGE_CONTENT_LENGTH) || 500
+            }
+        },
+    },
+
     // AI
     ai: {
         maxTokens: Number.parseInt(process.env.MAX_TOKENS) || 1000
