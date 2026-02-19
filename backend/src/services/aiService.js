@@ -1,10 +1,12 @@
+const config = require('../config/env')
+
 // Obtener listado de modelos disponibles en OpenRouter
 const getOpenRouterModels = async () => {
     try {
         const res = await fetch('https://openrouter.ai/api/v1/models', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`
+                'Authorization': `Bearer ${config.openRouterApiKey}`
             }
         })
         const json = await res.json()
@@ -46,7 +48,7 @@ const generateOpenRouterCompletion = async (model, messages) => {
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                'Authorization': `Bearer ${config.openRouterApiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({

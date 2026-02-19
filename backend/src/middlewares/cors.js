@@ -1,8 +1,8 @@
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []
+const config = require('../config/env')
 
 const corsOptions = {
     origin: function (origin, callback) {
-        if (allowedOrigins.includes(origin)) {
+        if (config.allowedOrigins.includes(origin)) {
             callback(null, true)
         } else {
             callback(new Error('Acceso no permitido por CORS'))
