@@ -1,3 +1,5 @@
+const config = require('../config/env')
+
 const validateTurnstile = async (req, res, next) => {
     const token = req.headers['cf-turnstile-token']
 
@@ -15,7 +17,7 @@ const validateTurnstile = async (req, res, next) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                secret: process.env.CF_TURNSTILE_SECRET_KEY,
+                secret: config.cfTurnstileSecretKey,
                 response: token,
                 remoteip: req.ip
             })

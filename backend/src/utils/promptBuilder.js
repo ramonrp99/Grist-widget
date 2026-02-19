@@ -1,3 +1,4 @@
+const config = require('../config/env')
 const { countTokens } = require('./tokenizer')
 const { splitTableIntoRows } = require('./markdown')
 
@@ -64,7 +65,7 @@ const getTruncatedContext = (context, availableTokens) => {
 // - 2º. Reduce el contexto (mantiene mínimo las 3 primeras filas (cabecera, separador y fila nº 1))
 // Devuelve un error controlado si continua superando el límite tras la reducción máxima
 const buildChatMessages = (userPrompt, context, history) => {
-    const maxTokens = process.env.MAX_TOKENS
+    const maxTokens = config.ai.maxTokens
 
     const systemPromptTokens = countTokens(systemPrompt)
     const userPromptTokens = countTokens(userPrompt)
