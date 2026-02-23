@@ -1,6 +1,7 @@
 const z = require('zod')
 const config = require('../config/env')
 const { isTable } = require('../utils/markdown')
+const { availableModels } = require('../config/models')
 
 const messageSchema = z.object({
     role: z.enum(['user', 'assistant']),
@@ -10,7 +11,12 @@ const messageSchema = z.object({
 const promptSchema = z.object({
     model: z.string()
             .nonempty()
-            .max(config.schemas.promptSchema.model.maxLength),
+            .max(config.schemas.promptSchema.model.maxLength)
+            .refine((val) => {
+                return Object.values(availableModels).flat().some(m => m.model === val)
+            }, {
+                error: 'Modelo no autorizado.'
+            }),
 
     prompt: z.string()
              .nonempty()
