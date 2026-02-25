@@ -19,10 +19,7 @@ const getOpenRouterModels = async () => {
         throw new AppError(statusCode, message)
     }
 
-    return {
-        ok: true,
-        data: json.data
-    }
+    return json.data
 }
 
 // Obtener listado de modelos locales disponibles
@@ -58,10 +55,7 @@ const generateOpenRouterCompletion = async (model, messages) => {
         throw new AppError(statusCode, message)
     }
 
-    return {
-        ok: true,
-        data: json.choices[0].message.content
-    }
+    return json.choices[0].message.content
 }
 
 // Enviar prompt a modelo local

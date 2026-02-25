@@ -79,20 +79,17 @@ const buildChatMessages = (userPrompt, context, history) => {
 
     // Todas las partes caben dentro del límite
     if (totalTokens <= maxTokens) {
-        return {
-            ok: true,
-            data: [
-                {
-                    role: 'system',
-                    content: `${systemPrompt}\n\n${context}`
-                },
-                ...history,
-                {
-                    role: 'user',
-                    content: userPrompt
-                }
-            ]
-        }
+        return [
+            {
+                role: 'system',
+                content: `${systemPrompt}\n\n${context}`
+            },
+            ...history,
+            {
+                role: 'user',
+                content: userPrompt
+            }
+        ]
     }
 
     // Si no caben todas las partes, se realiza truncado
@@ -120,20 +117,17 @@ const buildChatMessages = (userPrompt, context, history) => {
         }
     }
 
-    return {
-        ok: true,
-        data: [
-            {
-                role: 'system',
-                content: `${systemPrompt}\n\n${finalContext}`
-            },
-            ...finalHistory,
-            {
-                role: 'user',
-                content: userPrompt
-            }
-        ]
-    }
+    return [
+        {
+            role: 'system',
+            content: `${systemPrompt}\n\n${finalContext}`
+        },
+        ...finalHistory,
+        {
+            role: 'user',
+            content: userPrompt
+        }
+    ]
 }
 
 module.exports = { buildChatMessages }
