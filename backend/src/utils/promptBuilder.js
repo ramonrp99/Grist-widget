@@ -1,6 +1,7 @@
 const config = require('../config/env')
 const { countTokens } = require('./tokenizer')
 const { splitTableIntoRows } = require('./markdown')
+const AppError = require('../core/AppError')
 
 const { systemPrompt } = require('../config/systemPrompt')
 
@@ -78,20 +79,17 @@ const buildChatMessages = (userPrompt, context, history) => {
 
     // Todas las partes caben dentro del límite
     if (totalTokens <= maxTokens) {
-        return {
-            ok: true,
-            data: [
-                {
-                    role: 'system',
-                    content: `${systemPrompt}\n\n${context}`
-                },
-                ...history,
-                {
-                    role: 'user',
-                    content: userPrompt
-                }
-            ]
-        }
+        return [
+            {
+                role: 'system',
+                content: `${systemPrompt}\n\n${context}`
+            },
+            ...history,
+            {
+                role: 'user',
+                content: userPrompt
+            }
+        ]
     }
 
     // Si no caben todas las partes, se realiza truncado
@@ -115,27 +113,21 @@ const buildChatMessages = (userPrompt, context, history) => {
         finalHistory = []
 
         if (finalContext === null) {
-            return {
-                ok: false,
-                error: 'El mensaje excede el límite máximo de tokens establecido. Debe reducir el mensaje o el contexto seleccionado.'
-            }
+            throw new AppError(400, 'El mensaje excede el límite máximo de tokens establecido. Debe reducir el mensaje o el contexto seleccionado.')
         }
     }
 
-    return {
-        ok: true,
-        data: [
-            {
-                role: 'system',
-                content: `${systemPrompt}\n\n${finalContext}`
-            },
-            ...finalHistory,
-            {
-                role: 'user',
-                content: userPrompt
-            }
-        ]
-    }
+    return [
+        {
+            role: 'system',
+            content: `${systemPrompt}\n\n${finalContext}`
+        },
+        ...finalHistory,
+        {
+            role: 'user',
+            content: userPrompt
+        }
+    ]
 }
 
 module.exports = { buildChatMessages }

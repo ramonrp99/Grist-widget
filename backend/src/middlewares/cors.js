@@ -1,11 +1,12 @@
 const config = require('../config/env')
+const AppError = require('../core/AppError')
 
 const corsOptions = {
     origin: function (origin, callback) {
         if (config.allowedOrigins.includes(origin)) {
             callback(null, true)
         } else {
-            callback(new Error('Acceso no permitido por CORS'))
+            callback(new AppError(403, 'Acceso no permitido por CORS'))
         }
     },
     allowedHeaders: [

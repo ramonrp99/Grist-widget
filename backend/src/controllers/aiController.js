@@ -1,71 +1,44 @@
 const aiService = require('../services/aiService')
 const { buildChatMessages } = require('../utils/promptBuilder')
 const { extractTable } = require('../utils/markdown')
+const AppResponse = require('../core/AppResponse')
 
 const { availableModels } = require('../config/models')
 
-const getModels = async(req, res) => {
+const getModels = async(req, res, next) => {
     try {
-        const response = await aiService.getAvailableModels()
-
-        if (!response.ok) {
-            return res.json(response)
-        }
+        const models = await aiService.getAvailableModels()
 
         // La API de OpenRouter siempre devuelve todos sus modelos disponibles
         // Únicamente se devuelven los que se encuentren listados en models.json
         const availableModelsIds = new Set(availableModels.external.map(m => m.model))
-        const models = response.data.filter(m => availableModelsIds.has(m.id))
-                                    .map(m => ({
-                                        model: m.id,
-                                        name: availableModels.external.find(am => am.model === m.id)?.name || m.name,
-                                        description: availableModels.external.find(am => am.model === m.id)?.description || '',
-                                        type: 'external'
-                                    }))
+        const finalModels = models.filter(m => availableModelsIds.has(m.id))
+                                  .map(m => ({
+                                      model: m.id,
+                                      name: availableModels.external.find(am => am.model === m.id)?.name || m.name,
+                                      description: availableModels.external.find(am => am.model === m.id)?.description || m.description,
+                                      type: 'external'
+                                  }))
 
-        res.json({
-            ok: true,
-            data: models
-        })
+        new AppResponse(200, finalModels).send(res)
     } catch (err) {
-        res.status(400).json({
-            ok: false,
-            error: err.message
-        })
+        next(err)
     }
 }
 
-const generateCompletion = async(req, res) => {
-    const { model, prompt, context, messages } = req.body
-
-    const totalMessages = buildChatMessages(prompt, context, messages)
-
-    if (!totalMessages.ok) {
-        return res.status(400).json({
-            ok: false,
-            error: totalMessages.error
-        })
-    }
-
+const generateCompletion = async(req, res, next) => {
     try {
-        const response = await aiService.generateCompletion(model, totalMessages.data)
+        const { model, prompt, context, messages } = req.body
 
-        if (!response.ok) {
-            return res.json(response)
-        }
+        const totalMessages = buildChatMessages(prompt, context, messages)
 
-        const estructuredResponse = extractTable(response.data)
+        const response = await aiService.generateCompletion(model, totalMessages)
 
-        res.json({
-            ok: true,
-            response: estructuredResponse.text,
-            data: estructuredResponse.table
-        })
+        const estructuredResponse = extractTable(response)
+
+        new AppResponse(200, estructuredResponse).send(res)
     } catch (err) {
-        res.status(400).json({
-            ok: false,
-            error: err.message
-        })
+        next(err)
     }
 }
 
