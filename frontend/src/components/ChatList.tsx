@@ -7,7 +7,7 @@ interface ChatListProps {
 
 export default function ChatList({messages}: Readonly<ChatListProps>) {
     return (
-        <div className='flex flex-1 overflow-y-auto p-4 flex-col gap-6'>
+        <div className="flex flex-col gap-4">
             {messages.map((message) => 
                 <Message
                     key={message.id}

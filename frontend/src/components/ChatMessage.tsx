@@ -7,7 +7,7 @@ interface ChatMessageProps {
 export default function ChatMessage({message}: Readonly<ChatMessageProps>) {
     if(message.isUser) {
         return (
-            <div className="border border-black bg-white text-black rounded-sm max-w-[70%] ml-auto p-4">
+            <div className="rounded-lg rounded-tr-none max-w-[70%] ml-auto px-4 py-2 bg-message shadow-xs">
                 <p className="text-left break-words">{message.text}</p>
             </div>
         )
